@@ -36,4 +36,17 @@
  */
 + (void) enableDebugMode:(BOOL)enable;
 
+/** Enable default notification center post a @"NewVersionAvailable" notification.
+ *  Userinfo dictionary:
+ @{
+ @"LocalVersion": localVersion,
+ @"AppStoreVersion" : appStoreVersion,
+ @"UpdateURL" : updateUrl
+ }
+ *  Default is NO.
+ *
+ *  @param enable
+ */
++ (void) enablePostNotification:(BOOL)enable;
+
 @end

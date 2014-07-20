@@ -11,6 +11,7 @@
 @interface HSLUpdateChecker ()
 
 @property (nonatomic, copy) NSString *updateUrl; // We need to remember the URL for the default alert handler
+@property (nonatomic, assign) BOOL isPostNotificationEnable;
 
 @end
 
@@ -102,6 +103,9 @@
                                 dispatch_async(dispatch_get_main_queue(), ^{
                                     if (handler)
                                     {
+                                        if ([HSLUpdateChecker sharedUpdateChecker].isPostNotificationEnable) {
+                                            [[NSNotificationCenter defaultCenter] postNotificationName:@"NewVersionAvailable" object:self userInfo:@{@"LocalVersion":localVersion, @"AppStoreVersion" : appStoreVersion, @"UpdateURL" : updateUrl}];
+                                        }
                                         handler(appStoreVersion, localVersion, releaseNotes, updateUrl);
                                     }
                                 });
@@ -121,6 +125,10 @@
 
 + (void) enableDebugMode:(BOOL)enable {
     [HSLUpdateChecker sharedUpdateChecker].isDebugEnable = enable;
+}
+
++ (void) enablePostNotification:(BOOL)enable {
+    [HSLUpdateChecker sharedUpdateChecker].isPostNotificationEnable = enable;
 }
 
 #pragma mark - UIAlertViewDelegate methods
