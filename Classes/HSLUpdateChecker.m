@@ -123,6 +123,11 @@
                                     }
                                 });
                             }
+                            // Version is the same
+                            else {
+                                // Set new version is not available
+                                [HSLUpdateChecker sharedUpdateChecker].newVersionAvailable = NO;
+                            }
                         }
                     }
                 }
