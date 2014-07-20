@@ -18,6 +18,11 @@
 */
 @interface HSLUpdateChecker : NSObject <UIAlertViewDelegate>
 
+/** Return whether new version is detected, must call check for update first
+ *
+ */
++ (BOOL) isNewVersionAvailable;
+
 /** Checks for update and presents a UIAlertView if there is an update available.
  
  */
@@ -38,11 +43,11 @@
 
 /** Enable default notification center post a @"NewVersionAvailable" notification.
  *  Userinfo dictionary:
- @{
- @"LocalVersion": localVersion,
- @"AppStoreVersion" : appStoreVersion,
- @"UpdateURL" : updateUrl
- }
+    @{
+        @"LocalVersion": localVersion,
+        @"AppStoreVersion" : appStoreVersion,
+        @"UpdateURL" : updateUrl
+    }
  *  Default is NO.
  *
  *  @param enable

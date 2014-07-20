@@ -11,7 +11,9 @@
 @interface HSLUpdateChecker ()
 
 @property (nonatomic, copy) NSString *updateUrl; // We need to remember the URL for the default alert handler
-@property (nonatomic, assign) BOOL isPostNotificationEnable;
+@property (nonatomic, assign) BOOL newVersionAvailable; // once new version is detected, this will be YES
+@property (nonatomic, assign) BOOL isDebugEnable; // when this is YES, check update will always call handler
+@property (nonatomic, assign) BOOL isPostNotificationEnable; // when this is YES, a @"NewVersionAvailable" notification will be posted
 
 @end
 
@@ -26,6 +28,11 @@
         _sharedObject = [[self alloc] init];
     });
     return _sharedObject;
+}
+
++ (BOOL) isNewVersionAvailable
+{
+    return [HSLUpdateChecker sharedUpdateChecker].newVersionAvailable;
 }
 
 + (void)checkForUpdate
@@ -103,9 +110,15 @@
                                 dispatch_async(dispatch_get_main_queue(), ^{
                                     if (handler)
                                     {
+                                        // Post notification
                                         if ([HSLUpdateChecker sharedUpdateChecker].isPostNotificationEnable) {
                                             [[NSNotificationCenter defaultCenter] postNotificationName:@"NewVersionAvailable" object:self userInfo:@{@"LocalVersion":localVersion, @"AppStoreVersion" : appStoreVersion, @"UpdateURL" : updateUrl}];
                                         }
+                                        
+                                        // Set new version is available
+                                        [HSLUpdateChecker sharedUpdateChecker].newVersionAvailable = YES;
+                                        
+                                        // Call handler
                                         handler(appStoreVersion, localVersion, releaseNotes, updateUrl);
                                     }
                                 });
