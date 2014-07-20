@@ -29,4 +29,11 @@
  */
 + (void) checkForUpdateWithHandler:(void (^)(NSString *appStoreVersion, NSString *localVersion, NSString *releaseNotes, NSString *updateURL))handler;
 
+/** Check update handler can be called when debug mode is enabled.
+ *  Default is NO.
+ *
+ *  @param enable
+ */
++ (void) enableDebugMode:(BOOL)enable;
+
 @end

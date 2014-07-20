@@ -87,8 +87,9 @@
                     if (localVersion && ![localVersion isEqualToString:appStoreVersion])
                     {
                         // Different! Tell our handler about it if we haven't already for this appStoreVersion.
+                        // If debug mode is enabled, always call handler.
                         NSString *checkedAppStoreVersionKey = [NSString stringWithFormat:@"HSL_UPDATE_CHECKER_CHECKED_%@", appStoreVersion];
-                        if (![[NSUserDefaults standardUserDefaults] boolForKey:checkedAppStoreVersionKey])
+                        if ([HSLUpdateChecker sharedUpdateChecker].isDebugEnable || (![[NSUserDefaults standardUserDefaults] boolForKey:checkedAppStoreVersionKey]))
                         {
                             [[NSUserDefaults standardUserDefaults] setBool:YES forKey:checkedAppStoreVersionKey];
                             [[NSUserDefaults standardUserDefaults] synchronize];
@@ -116,6 +117,10 @@
             NSLog(@"HSLUpdateChecker: Received no data from iTunes API");
         }
     });
+}
+
++ (void) enableDebugMode:(BOOL)enable {
+    [HSLUpdateChecker sharedUpdateChecker].isDebugEnable = enable;
 }
 
 #pragma mark - UIAlertViewDelegate methods
