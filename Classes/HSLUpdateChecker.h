@@ -23,6 +23,12 @@
  */
 + (BOOL) isNewVersionAvailable;
 
+/** Return a string representing the new version available in the AppStore.
+ *
+ *  Returns nil if no new version is available.
+ */
++ (NSString *) newAppStoreVersionAvailable;
+
 /** Checks for update and presents a UIAlertView if there is an update available.
  
  */
@@ -53,5 +59,10 @@
  *  @param enable
  */
 + (void) enablePostNotification:(BOOL)enable;
+
+/** Launch AppStore page for updating to latest version
+ 
+ */
++ (void) launchAppStore;
 
 @end

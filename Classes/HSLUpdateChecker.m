@@ -11,6 +11,7 @@
 @interface HSLUpdateChecker ()
 
 @property (nonatomic, copy) NSString *updateUrl; // We need to remember the URL for the default alert handler
+@property (nonatomic, strong) NSString *appStoreVersion; // new app store version available
 @property (nonatomic, assign) BOOL newVersionAvailable; // once new version is detected, this will be YES
 @property (nonatomic, assign) BOOL isDebugEnable; // when this is YES, check update will always call handler
 @property (nonatomic, assign) BOOL isPostNotificationEnable; // when this is YES, a @"NewVersionAvailable" notification will be posted
@@ -35,12 +36,14 @@
     return [HSLUpdateChecker sharedUpdateChecker].newVersionAvailable;
 }
 
++ (NSString *) newAppStoreVersionAvailable
+{
+    return [HSLUpdateChecker sharedUpdateChecker].appStoreVersion;
+}
+
 + (void)checkForUpdate
 {
     [self checkForUpdateWithHandler:^(NSString *appStoreVersion, NSString *localVersion, NSString *releaseNotes, NSString *updateURL) {
-
-        // Remember the URL for the alert delegate
-        [HSLUpdateChecker sharedUpdateChecker].updateUrl = updateURL;
 
         NSString *titleFormat = NSLocalizedString(@"Version %@ Now Available", @"HSLUpdateChecker upgrade alert message title. The argument is the version number of the update.");
         NSString *messageFormat = NSLocalizedString(@"New in this version:\n%@", @"HSLUpdateChecker upgrade alert message text. The argument is the release notes for the update.");
@@ -105,6 +108,8 @@
                         // Set new version is available
                         [HSLUpdateChecker sharedUpdateChecker].newVersionAvailable = YES;
                         
+                        [HSLUpdateChecker sharedUpdateChecker].appStoreVersion = appStoreVersion;
+                        [HSLUpdateChecker sharedUpdateChecker].updateUrl = updateUrl;
                         
                         // Different! Tell our handler about it if we haven't already for this appStoreVersion.
                         // If debug mode is enabled, always call handler.
@@ -130,6 +135,8 @@
                     else {
                         // Set new version is not available
                         [HSLUpdateChecker sharedUpdateChecker].newVersionAvailable = NO;
+                        [HSLUpdateChecker sharedUpdateChecker].appStoreVersion = nil;
+                        [HSLUpdateChecker sharedUpdateChecker].updateUrl = nil;
                     }
                 }
             }
@@ -150,6 +157,20 @@
     [HSLUpdateChecker sharedUpdateChecker].isPostNotificationEnable = enable;
 }
 
++ (void) launchAppStore
+{
+    NSString *updateUrl = [HSLUpdateChecker sharedUpdateChecker].updateUrl;
+    [[HSLUpdateChecker sharedUpdateChecker] launchAppStore:updateUrl];
+}
+
+- (void) launchAppStore:(NSString *)updateUrl
+{
+    if( updateUrl ) {
+        NSURL *url = [NSURL URLWithString:updateUrl];
+        [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
 #pragma mark - UIAlertViewDelegate methods
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
@@ -157,8 +178,7 @@
     if (buttonIndex == alertView.firstOtherButtonIndex)
     {
         // Go to the app store
-        NSURL *url = [NSURL URLWithString:self.updateUrl];
-        [[UIApplication sharedApplication] openURL:url];
+        [self launchAppStore:self.updateUrl];
     }
 }
 
